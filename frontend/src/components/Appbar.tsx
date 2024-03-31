@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar } from "./BlogCard";
+// import { Avatar } from "./BlogCard";
 
 export const Appbar = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export const Appbar = () => {
           >
             Logout
           </button>
-          <Avatar name="Krishan Kumar" size={"big"} />
+          {/* <Avatar name="Krishan Kumar" size={"big"} /> */}
         </div>
       ) : (
         <div>
