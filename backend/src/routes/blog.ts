@@ -54,7 +54,6 @@ blogRouter.post("/", async (c) => {
         authorId: c.get("jwtPayload"),
       },
     });
-    console.log(c.get("jwtPayload"));
 
     c.status(200);
     return c.json({
@@ -163,6 +162,55 @@ blogRouter.get("/:id", async (c) => {
     c.status(403);
     return c.json({
       error: "Internal Server Error",
+    });
+  }
+});
+
+blogRouter.delete("/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const id = c.req.param("id");
+  try {
+    const postToDelete = await prisma.post.findFirst({
+      where: {
+        id: id,
+      },
+      select: {
+        author: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    const authorId = c.get("jwtPayload");
+    console.log({
+      authorId,postToDelete,id
+    });
+    
+    if (postToDelete && authorId == postToDelete.author.id) {
+      const post = await prisma.post.delete({
+        where: {
+          id: id,
+        },
+      });
+      c.status(200);
+      return c.json({
+        post,
+      });
+    }
+    c.status(403);
+    return c.json({
+      error: "Unauthorized",
+    });
+  } catch (error) {
+    c.status(403);
+    console.log("here");
+    
+    return c.json({
+      error: "Interval Server Error",
     });
   }
 });
